@@ -14,12 +14,21 @@ Required Python 3.8.10
 
     ACTIVE_NOW_USERNAME=<username>
     ACTIVE_NOW_PASSWORD=<password>
+    NOTIFICATION_BACKEND=<email|telegram>
 
+    # email settings
     DEFAULT_FROM_EMAIL=<default_email>
     EMAIL_PASSWORD=<default_email_password>
     EMAIL_SMTP=<smtp_server>
     EMAIL_PORT=<smtp port, default:587>
     RECEIVER_EMAIL=<receiver_email>
+
+    # telegram settings
+    TELEGRAM_API_ID=<api_id>
+    TELEGRAM_API_HASH=<api_hash>
+    TELEGRAM_BOT_TOKEN=<bot_token>
+    TELEGRAM_GROUP_ID=<group_id>
+
 
 **Note:** you can use _.env_ file
 

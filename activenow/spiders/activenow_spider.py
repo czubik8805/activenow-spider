@@ -1,12 +1,12 @@
 import json
 import os
 from functools import cached_property
-import smtplib
+
 import scrapy
 from scrapy import FormRequest
 from scrapy.http import Request
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+
+from .notifications import get_notification_backend
 
 
 class ActiveNowSpider(scrapy.Spider):
@@ -49,28 +49,11 @@ class ActiveNowSpider(scrapy.Spider):
             fp.write(json.dumps(data))
 
     def send_notification(self, data):
-        sender_address = os.getenv("DEFAULT_FROM_EMAIL", "")
-        sender_pass = os.getenv("EMAIL_PASSWORD", "")
-        receiver_address = os.getenv("RECEIVER_EMAIL", "")
+        message = "\n".join([str(row) for row in data]) or 'Brak wolnych terminów'
 
-        message = MIMEMultipart()
-        message["From"] = sender_address
-        message["To"] = receiver_address
-        message[
-            "Subject"
-        ] = "ActiveNow:odrabianie -> dostępne terminy"  # The subject line
-        # The body and the attachments for the mail
-        mail_content = "\n".join([str(row) for row in data])
-        message.attach(MIMEText(mail_content, "plain"))
-        # Create SMTP session for sending the mail
-        session = smtplib.SMTP(
-            os.getenv("EMAIL_SMTP", ""), os.getenv("EMAIL_PORT", 587)
-        )  # use gmail with port
-        session.starttls()  # enable security
-        session.login(sender_address, sender_pass)  # login with mail_id and password
-        text = message.as_string()
-        session.sendmail(sender_address, receiver_address, text)
-        session.quit()
+        get_notification_backend()(
+            message=message, subject="ActiveNow:odrabianie"
+        ).run()
 
     def parse_cancellations_page(self, response):
         current_data = []
@@ -87,8 +70,8 @@ class ActiveNowSpider(scrapy.Spider):
                 }
             )
         if self.prev_data != current_data:
-            print('current data changed:', current_data)
+            print("current data changed:", current_data)
             self.send_notification(current_data)
             self.update_data(current_data)
         else:
-            print('current data has not changed', current_data)
+            print("current data has not changed", current_data)

@@ -5,7 +5,7 @@ from twisted.internet import reactor
 
 from spiders.activenow_spider import ActiveNowSpider
 
-load_dotenv()  # take environment variables from .env.
+load_dotenv(".env")  # take environment variables from .env.
 
 
 def crawl_job():
