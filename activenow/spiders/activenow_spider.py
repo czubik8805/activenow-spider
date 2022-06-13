@@ -87,5 +87,8 @@ class ActiveNowSpider(scrapy.Spider):
                 }
             )
         if self.prev_data != current_data:
+            print('current data changed:', current_data)
             self.send_notification(current_data)
             self.update_data(current_data)
+        else:
+            print('current data has not changed', current_data)
