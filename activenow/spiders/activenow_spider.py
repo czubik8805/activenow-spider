@@ -49,7 +49,11 @@ class ActiveNowSpider(scrapy.Spider):
             fp.write(json.dumps(data))
 
     def send_notification(self, data):
-        message = "\n".join([str(row) for row in data]) or 'Brak wolnych terminów'
+        msg_template = "<b>{date}</b>\n" \
+                       "{group}\n" \
+                       "Trener: {coach}\n" \
+                       "Dostępne miejsca: <b>{capacity}</b>\n\n"
+        message = "".join([msg_template.format(**row) for row in data]) or 'Brak wolnych terminów 😞'
 
         get_notification_backend()(
             message=message, subject="ActiveNow:odrabianie"
